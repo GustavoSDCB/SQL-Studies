@@ -1,0 +1,71 @@
+-- Chapter 9 Subqueries
+
+/* 
+- Count the number of film rentals for each customer, and the containing query then retrieves those customers who have rented exactly 20 films.
+*/
+select c.first_name, c.last_name
+from rental r
+inner join customer c
+on r.customer_id = c.customer_id
+group by r.customer_id
+having count(*) = 20;
+
+-- Now using Correlated Subqueries (using equality conditions)
+select c.first_name, c.last_name
+from customer c 
+where 20 = (select count(*) from rental r where r.customer_id = c.customer_id);
+
+/*
+Find all customers whose total payments for all film rentals are between $180 and $240.
+*/
+select c.first_name, c.last_name
+from payment p
+inner join customer c
+on p.customer_id = c.customer_id
+group by p.customer_id
+having sum(p.amount) between 180 and 280;
+
+-- Now using Correlated Subqueries (using range conditions)
+select c.first_name, c.last_name
+from customer c
+where (select sum(p.amount) from payment p where p.customer_id = c.customer_id) between 180 and 240;
+
+/*
+Finds all the customers who rented at least one film prior to May 25, 2005, without regard for how many films were rented.
+*/
+select c.first_name, c.last_name
+from customer c
+inner join rental r
+on c.customer_id = r.customer_id
+where r.rental_date <= '2005-05-25';
+
+-- Using Exists Operator
+select c.first_name, c.last_name
+from customer c
+where exists (
+select * from rental r where rental_date < '2005-05-25' and c.customer_id = r.customer_id
+);
+
+/*
+Finds all actors who have never appeared in an R-rated film.
+*/
+select a.first_name, a.last_name
+from actor a
+where a.actor_id not in (
+select fa.actor_id
+from film_actor fa
+inner join film f
+on fa.film_id = f.film_id
+where f.rating = 'R'
+);
+
+-- Using Not Exists
+select a.first_name, a.last_name
+from actor a
+where not exists (
+select *
+from film_actor fa
+inner join film f
+on fa.film_id = f.film_id
+where fa.actor_id = a.actor_id and f.rating = 'R'
+);
