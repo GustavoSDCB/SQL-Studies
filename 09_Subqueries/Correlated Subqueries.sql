@@ -1,4 +1,8 @@
--- Chapter 9 Subqueries
+-- =============================================================
+-- Chapter 9: Subqueries
+-- Based on "Learning SQL" by Alan Beaulieu
+-- Topics: Single-row, multi-row, correlated subqueries, EXISTS / NOT EXISTS
+-- =============================================================
 
 /* 
 - Count the number of film rentals for each customer, and the containing query then retrieves those customers who have rented exactly 20 films.
@@ -43,7 +47,7 @@ where r.rental_date <= '2005-05-25';
 select c.first_name, c.last_name
 from customer c
 where exists (
-select * from rental r where rental_date < '2005-05-25' and c.customer_id = r.customer_id
+select 1 from rental r where rental_date < '2005-05-25' and c.customer_id = r.customer_id
 );
 
 /*
@@ -63,7 +67,7 @@ where f.rating = 'R'
 select a.first_name, a.last_name
 from actor a
 where not exists (
-select *
+select 1
 from film_actor fa
 inner join film f
 on fa.film_id = f.film_id
