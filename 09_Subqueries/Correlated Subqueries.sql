@@ -73,3 +73,18 @@ inner join film f
 on fa.film_id = f.film_id
 where fa.actor_id = a.actor_id and f.rating = 'R'
 );
+
+/*
+Generating a list of customer IDs along with the number of film rentals and the total payments using subqueries.
+*/
+select c.first_name, c.last_name, p.num_rents, p.tot_payments
+from customer c
+inner join
+(
+select r.customer_id, count(*) as num_rents, sum(p.amount) as tot_payments
+from rental r
+inner join payment p
+on r.rental_id = p.rental_id
+group by r.customer_id
+) as p
+on c.customer_id = p.customer_id;
