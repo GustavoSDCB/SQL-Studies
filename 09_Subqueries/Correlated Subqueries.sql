@@ -88,3 +88,31 @@ on r.rental_id = p.rental_id
 group by r.customer_id
 ) as p
 on c.customer_id = p.customer_id;
+
+/*
+Generate a report showing each customer’s name, along with their city, the total number of rentals, and the total payment amount.
+*/
+select c.first_name, c.last_name, ci.city, sum(p.amount) as tot_pymt, count(*) tot_rental
+from customer c
+inner join address a
+on c.address_id = a.address_id
+inner join city ci
+on a.city_id = ci.city_id
+inner join payment p
+on c.customer_id = p.customer_id
+group by c.first_name, c.last_name, ci.city;
+
+-- Using Task-Oriented Subqueries
+select c.first_name, c.last_name, ci.city, p.tot_pymnt, p.tot_rental
+from customer c
+inner join
+(
+select customer_id, sum(amount) as tot_pymnt, count(*) as tot_rental
+from payment
+group by customer_id
+) as p
+on c.customer_id = p.customer_id
+inner join address a
+on c.address_id = a.address_idkkk
+inner join city ci
+on a.city_id = ci.city_id;
