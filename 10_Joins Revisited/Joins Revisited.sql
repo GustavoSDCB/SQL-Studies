@@ -1,0 +1,5 @@
+-- =====================================================================================================
+-- Chapter 10: Joins Revisited
+-- Based on "Learning SQL" by Alan Beaulieu
+-- Topics: Outer Joins, Left vs Right Outer Joins, Three-Way Outer Joins, Cross Joins, Natural Joins
+-- =====================================================================================================
