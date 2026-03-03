@@ -136,3 +136,82 @@ correlated subquery, I can use the WHEN clause to interact with the query outsid
 of the subquery scope, this way I can make the Join correctly just like if it
 was a normal inner join.
 */
+
+-- Another example of correlated subquery
+select 
+c.first_name, c.last_name,
+(
+select datediff(now(), max(rental_date))
+from rental r
+where r.customer_id = c.customer_id
+) days_since_last_rental
+from customer c;
+
+-- Handling Null Values
+select
+c.first_name, c.last_name,
+case
+	when a.address is null then 'Unknown'
+    else a.address
+end address,
+case
+	when ct.city is null then 'Unknown'
+    else ct.city
+end city,
+case
+	when cn.country is null then 'Unknown'
+    else cn.country
+end country
+from customer c
+left join address a
+on c.address_id = a.address_id
+left join city ct
+on a.city_id = ct.city_id
+left join country cn
+on ct.country_id = cn.country_id;
+
+-- Exercises
+/*
+Rewrite the following query, which uses a simple case expression, so that the same 
+results are achieved using a searched case expression. Try to use as few when clauses 
+as possible.
+
+SELECT name,
+  CASE name
+    WHEN 'English' THEN 'latin1'
+    WHEN 'Italian' THEN 'latin1'
+    WHEN 'French' THEN 'latin1'
+    WHEN 'German' THEN 'latin1'
+    WHEN 'Japanese' THEN 'utf8'
+    WHEN 'Mandarin' THEN 'utf8'
+    ELSE 'Unknown'
+  END character_set
+FROM language;
+*/
+select name,
+case
+	when name in ('English', 'Italian', 'French', 'German') then 'latin1'
+    when name in ('Japanese','Mandarin') then 'utf8'
+    else 'Unknown'
+end character_set
+from language;
+
+/*
+Rewrite the following query so that the result set contains a single row with five 
+columns (one for each rating). Name the five columns G, PG, PG_13, R, and NC_17.
+
+SELECT rating, coun(*)
+FROM film
+GROUP BY rating;
+*/
+select distinct rating
+from film
+order by rating;
+
+select
+sum(case when rating = 'G' then 1 else 0 end) g,
+sum(case when rating = 'PG' then 1 else 0 end) pg,
+sum(case when rating = 'PG-13' then 1 else 0 end) pg_13,
+sum(case when rating = 'R' then 1 else 0 end) r,
+sum(case when rating = 'NC-17' then 1 else 0 end) nc_17
+from film;
