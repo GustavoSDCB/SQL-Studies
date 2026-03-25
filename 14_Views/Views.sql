@@ -110,6 +110,20 @@ as
 select
 cn.country,
 (
-	select sum(
+	select sum(p.amount)
+    from payment p
+    inner join rental r on p.rental_id = r.rental_id
+    inner join customer c on r.customer_id = c.customer_id
+    inner join address a on c.address_id = a.address_id
+    inner join city ct on a.city_id = ct.city_id
+    where ct.country_id = cn.country_id
 ) as tot_payments
 from country cn;
+
+select * from customer_country;
+
+/*
+In this exercise I made a small mistake while reading the EER Diagram and connected the tables through an 
+unnecessary intermediate table, resulting in a longer join path than needed. Since the query still achieves the 
+correct result I kept it as is, noting that the optimal path would connect the tables more directly.
+*/
